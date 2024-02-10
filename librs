@@ -1,0 +1,144 @@
+use std::collections::HashMap;
+
+trait Print_details {
+    fn print_deails(&self);
+}
+
+pub mod Library {
+    #[derive(Debug)]
+    pub struct Book {
+        pub id : u32,
+        pub title : String,
+        pub author : String,
+        pub is_available : bool,
+    }
+
+    impl Book {
+        pub fn new_book(book_id : u32 , book_title : String , book_author : String , availability : bool) -> Book {
+            let new_book = Book {
+                id : book_id,
+                title : book_title,
+                author : book_author,
+                is_available : availability,
+            };
+
+            new_book
+        }
+    }
+
+    impl Print_details for Book {
+        fn print_deails(&self) {
+            println!("Book Title : {:?} , Book Author : {:?} , Availability : {:?}" , self.title , self.author , self.is_available);
+        }
+    }
+
+    use::std::collections::HashMap;
+
+    use crate::Print_details;
+
+    #[derive(Debug)]
+    pub struct book_library {
+        pub book_inventory : HashMap<u32 , Book>,
+    }
+
+    impl Print_details for book_library {
+        fn print_deails(&self) {
+            for (_ , books) in &self.book_inventory {
+                println!("Books in library : {:?}" , books);
+            }
+        }
+    }
+
+    impl book_library {
+        pub fn add_book(&mut self , id : u32 , book_details : Book) {
+            self.book_inventory.insert(id, book_details);
+        }
+
+        pub fn remove_book(&mut self , book_id : u32){
+            self.book_inventory.remove(&book_id);
+        }
+
+        pub fn search_book(&self , book_name : String) -> Result<() , String> {
+            for (_ , book_deails) in &self.book_inventory {
+                if book_deails.title == book_name {
+                    return Ok(())
+                }
+            }
+            Err("No such book found!".to_string())
+        }
+
+        pub fn borrow_book(&mut self, book_name: String) -> Result<(), String> {
+            for (_, book_details) in &mut self.book_inventory {
+                if book_details.title == book_name {
+                    if book_details.is_available {
+                        book_details.is_available = false;
+                        return Ok(());
+                    } else {
+                        return Err("Book Already Borrowed :(".to_string()); // corrected error message
+                    }
+                }
+            }
+            Err("No such book found! :(".to_string())
+        }
+        
+        pub fn return_book(&mut self, book_name: String) -> Result<(), String> {
+            for (_, book_details) in &mut self.book_inventory {
+                if book_details.title == book_name {
+                    if !book_details.is_available { // using negation to check if book is not available
+                        book_details.is_available = true; // corrected assignment operator
+                        return Ok(());
+                    } else {
+                        return Err("Book already Returned! :)".to_string());
+                    }
+                }
+            }
+            Err("No such book found! :(".to_string())
+        }
+    }
+
+}
+
+fn main(){
+    use crate::Library::*;
+
+    let mut new_library = book_library {
+        book_inventory : HashMap::new(),
+    };
+
+    let book1 = Book::new_book(1 , "Sherlock Holmes".to_string() , "Sir Arthur Canon".to_string() , true);
+    let book2 = Book::new_book(2 , "Merchant of Venice".to_string() , "Shakesphere".to_string() , true);
+
+    book1.print_deails();
+    book2.print_deails();
+
+    new_library.add_book(1, book1);
+    new_library.add_book(2, book2);
+
+    new_library.remove_book(2);
+
+    println!("{:?}" , new_library);
+
+    let searched_book = new_library.search_book("Sherlock Holmes".to_string());
+    println!("{:?}" , searched_book);
+
+    let borrowed_book = new_library.borrow_book("Sherlock Holmes".to_string());
+    println!("{:?}" , borrowed_book);
+
+    match borrowed_book {
+        Ok(()) => println!("Borrowed Successfully! :)"),
+        Err(err) => println!("Failed to borrow : {}! :(" , err),
+    }
+
+    new_library.return_book("Sherlock Holmes".to_string());
+
+    let borrow_2 = new_library.borrow_book("Sherlock Holmes".to_string());
+
+
+    match borrow_2 {
+        Ok(()) => println!("Borrowed Successfully! :)"),
+        Err(err) => println!("Failed to borrow : {}!" , err),
+    }
+
+    new_library.print_deails();
+
+}
