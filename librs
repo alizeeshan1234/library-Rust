@@ -74,7 +74,7 @@ pub mod Library {
                         book_details.is_available = false;
                         return Ok(());
                     } else {
-                        return Err("Book Already Borrowed :(".to_string()); // corrected error message
+                        return Err("Book Already Borrowed :(".to_string()); 
                     }
                 }
             }
@@ -85,7 +85,7 @@ pub mod Library {
             for (_, book_details) in &mut self.book_inventory {
                 if book_details.title == book_name {
                     if !book_details.is_available { // using negation to check if book is not available
-                        book_details.is_available = true; // corrected assignment operator
+                        book_details.is_available = true; 
                         return Ok(());
                     } else {
                         return Err("Book already Returned! :)".to_string());
